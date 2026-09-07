@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from database import SessionLocal
+from models import Ticket as TicketModel
+from sqlalchemy import select
 
 app = FastAPI()
-
-tickets = []
 
 class Ticket(BaseModel):
     title: str
@@ -15,9 +16,27 @@ def home():
 
 @app.post("/tickets")
 def create_ticket(ticket: Ticket):
-    tickets.append(ticket)
-    return ticket
+    db = SessionLocal()
+
+    try:
+        new_ticket = TicketModel(title = ticket.title, description = ticket.description)
+        db.add(new_ticket)
+        db.commit()
+        db.refresh(new_ticket)
+
+        return new_ticket
+    finally:
+        db.close()
+
 
 @app.get("/tickets")
-def get_ticket():
-    return tickets
+def get_tickets():
+    db = SessionLocal()
+
+    try:
+        result = db.execute(select(TicketModel))
+        tickets = result.scalars().all()
+
+        return tickets
+    finally:
+        db.close()
