@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from database import SessionLocal
 from models import Ticket as TicketModel
@@ -38,5 +38,17 @@ def get_tickets():
         tickets = result.scalars().all()
 
         return tickets
+    finally:
+        db.close()
+
+@app.get("/tickets/{ticket_id}")
+def get_ticket(ticket_id: int):
+    db = SessionLocal()
+
+    try:
+        ticket = db.get(TicketModel, ticket_id)
+        if ticket is None:
+            raise HTTPException(status_code=404, detail= "Ticket not found")
+        return ticket
     finally:
         db.close()
