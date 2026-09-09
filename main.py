@@ -10,6 +10,9 @@ class Ticket(BaseModel):
     title: str
     description: str
 
+class TicketUpdate(BaseModel):
+    status: str
+
 @app.get("/")
 def home():
     return {"message": "ResolveAI API is running"}
@@ -49,6 +52,24 @@ def get_ticket(ticket_id: int):
         ticket = db.get(TicketModel, ticket_id)
         if ticket is None:
             raise HTTPException(status_code=404, detail= "Ticket not found")
+        return ticket
+    finally:
+        db.close()
+
+@app.patch("/tickets/{ticket_id}")
+def update_ticket(ticket_id: int, ticket_update: TicketUpdate):
+    db = SessionLocal()
+
+    try:
+        ticket = db.get(TicketModel, ticket_id)
+
+        if ticket is None:
+            raise HTTPException(status_code=404, detail= "Ticket not found")
+        ticket.status = ticket_update.status
+
+        db.commit()
+        db.refresh(ticket)
+
         return ticket
     finally:
         db.close()
