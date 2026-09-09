@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from database import SessionLocal
 from models import Ticket as TicketModel
 from sqlalchemy import select
+from typing import Literal
 
 app = FastAPI()
 
@@ -11,7 +12,7 @@ class Ticket(BaseModel):
     description: str
 
 class TicketUpdate(BaseModel):
-    status: str
+    status: Literal["open", "in_progress", "closed"]
 
 @app.get("/")
 def home():
