@@ -74,3 +74,18 @@ def update_ticket(ticket_id: int, ticket_update: TicketUpdate):
         return ticket
     finally:
         db.close()
+
+@app.delete("/tickets/{ticket_id}")
+def delete_ticket(ticket_id: int):
+    db = SessionLocal()
+
+    try:
+        ticket = db.get(TicketModel, ticket_id)
+        if ticket is None:
+            raise HTTPException(status_code=404, detail="Ticket not found")
+        db.delete(ticket)
+        db.commit()
+
+        return {"message": "Ticket deleted successfully"}
+    finally:
+        db.close()
