@@ -11,4 +11,5 @@ class Ticket(Base):
     title: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
     status: Mapped[str] = mapped_column(nullable=False, default="open")
+    priority: Mapped[str] = mapped_column(nullable=False, default="medium")
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp())
