@@ -18,6 +18,11 @@ def test_create_ticket():
     assert data["description"] == "Office WiFi is down"
     assert data["status"] == "open"
     assert data["priority"] == "medium"
+    assert data["category"] is None
+    assert data["impact"] is None
+    assert data["urgency"] is None
+    assert data["ai_summary"] is None
+    assert data["ai_confidence"] is None
     assert "id" in data
     assert "created_at" in data
 
